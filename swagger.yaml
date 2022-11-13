@@ -1,0 +1,25 @@
+swagger: "2.0"
+info:
+  title: Fenix Bookstore
+  version: 0.0.1
+  description: 使用基于Flask的单体架构实现《凤凰架构：构建可靠的大型分布式系统》一书中的Fenix's BookStore网站
+host: localhost
+basePath: /v1
+schemes:
+  - http
+paths:
+  /index:
+    get:
+      tags:
+        - Index
+      produces:
+        - text/html
+      responses:
+        "200":
+          description: 成功返回Index页面
+          schema:
+            type: string
+        "404":
+          description: 找不到Index页面
+          schema:
+            type: string
