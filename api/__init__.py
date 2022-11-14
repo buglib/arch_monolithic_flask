@@ -3,11 +3,15 @@ from __future__ import absolute_import
 
 from flask import Flask
 
-import v1
+from . import v1
 
 
 def create_app():
-    app = Flask(__name__, static_folder='static')
+    app = Flask(
+        import_name=__name__, 
+        static_folder="../frontend/static",
+        template_folder="../frontend"
+    )
     app.register_blueprint(
         v1.bp,
         url_prefix='/v1')

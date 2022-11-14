@@ -8,9 +8,9 @@
 ###
 from __future__ import absolute_import
 
-from .api.index import Index
+from .resources.index import Index
 
 
 routes = [
-    dict(resource=Index, urls=['/index'], endpoint='index'),
+    dict(resource=Index, urls=['/'], endpoint='index'),
 ]

@@ -56,7 +56,7 @@ validators = {
 }
 
 filters = {
-    ('index', 'GET'): {200: {'headers': None, 'schema': {'type': 'string'}}, 404: {'headers': None, 'schema': {'type': 'string'}}},
+    ('index', 'GET'): {200: {'headers': {'Content-Type': {'type': 'string'}}, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': None}},
 }
 
 scopes = {
