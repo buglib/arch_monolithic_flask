@@ -24,3 +24,29 @@ paths:
             type: file
         "404":
           description: 找不到Index页面
+  /advertisements:
+    get:
+      tags:
+        - Advertisements
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 成功返回广告轮播图
+          schema:
+            $ref: "#/definitions/advertisementsModel"
+definitions:
+  advertisementsModel:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        image:
+          type: string
+          description: 广告轮播图中某书本的图片URL
+          example: /static/carousel/fenix2.png
+        productId:
+          type: integer
+      

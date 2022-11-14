@@ -9,8 +9,10 @@
 from __future__ import absolute_import
 
 from .resources.index import Index
+from .resources.advertisements import Advertisements
 
 
 routes = [
-    dict(resource=Index, urls=['/'], endpoint='index'),
+    dict(resource=Index, urls=['/index'], endpoint=''),
+    dict(resource=Advertisements, urls=['/advertisements'], endpoint='advertisements'),
 ]

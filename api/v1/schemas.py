@@ -50,13 +50,14 @@ class RefNode(object):
 
 base_path = '/v1'
 
-definitions = {'definitions': {}, 'parameters': {}}
+definitions = {'definitions': {'advertisementsModel': {'type': 'array', 'items': {'type': 'object', 'properties': {'id': {'type': 'integer'}, 'image': {'type': 'string', 'description': '广告轮播图中某书本的图片URL', 'example': '/static/carousel/fenix2.png'}, 'productId': {'type': 'integer'}}}}}, 'parameters': {}}
 
 validators = {
 }
 
 filters = {
-    ('index', 'GET'): {200: {'headers': {'Content-Type': {'type': 'string'}}, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': None}},
+    ('', 'GET'): {200: {'headers': {'Content-Type': {'type': 'string'}}, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': None}},
+    ('advertisements', 'GET'): {200: {'headers': None, 'schema': {'$ref': '#/definitions/advertisementsModel'}}},
 }
 
 scopes = {
