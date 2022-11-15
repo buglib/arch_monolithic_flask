@@ -11,10 +11,12 @@ from __future__ import absolute_import
 from .resources.index import Index
 from .resources.advertisements import Advertisements
 from .resources.products import Products
+from .resources.product import Product
 
 
 routes = [
     dict(resource=Index, urls=['/index'], endpoint='index'),
     dict(resource=Advertisements, urls=['/advertisements'], endpoint='advertisements'),
     dict(resource=Products, urls=['/products'], endpoint='products'),
+    dict(resource=Product, urls=['/products/<int:productId>'], endpoint='product'),
 ]

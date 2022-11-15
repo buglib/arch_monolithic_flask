@@ -49,6 +49,24 @@ paths:
             type: array
             items:
               $ref: "#/definitions/productModel"
+  /products/{productId}:
+    get:
+      tags:
+        - Product
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          type: integer
+          name: productId
+          required: True
+      responses:
+        "200":
+          description: 按编号返回书本详情信息
+          schema:
+            $ref: "#/definitions/productModel"
+        "404":
+          description: 编号指定的书本不存在
 definitions:
   advertisementsModel:
     type: array
@@ -102,3 +120,4 @@ definitions:
             value:
               type: string
               description: 书本规格属性值
+      

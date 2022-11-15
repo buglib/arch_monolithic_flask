@@ -59,6 +59,7 @@ filters = {
     ('index', 'GET'): {200: {'headers': {'Content-Type': {'type': 'string'}}, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': None}},
     ('advertisements', 'GET'): {200: {'headers': None, 'schema': {'$ref': '#/definitions/advertisementsModel'}}},
     ('products', 'GET'): {200: {'headers': None, 'schema': {'type': 'array', 'items': {'$ref': '#/definitions/productModel'}}}},
+    ('product', 'GET'): {200: {'headers': None, 'schema': {'$ref': '#/definitions/productModel'}}, 404: {'headers': None, 'schema': None}},
 }
 
 scopes = {
