@@ -35,6 +35,20 @@ paths:
           description: 成功返回广告轮播图
           schema:
             $ref: "#/definitions/advertisementsModel"
+  /products:
+    get:
+      tags:
+        - Products
+      produces:
+        - application/json
+      responses:
+        "200":
+          description:
+            返回所有书本
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/productModel"
 definitions:
   advertisementsModel:
     type: array
@@ -49,4 +63,42 @@ definitions:
           example: /static/carousel/fenix2.png
         productId:
           type: integer
-      
+  productModel:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: 书本编号
+      title:
+        type: string
+        description: 书名
+      price:
+        type: number
+        description: 书本价格
+      rate:
+        type: number
+        description: 优惠折扣
+      description:
+        type: string
+        description: 书本描述
+      cover:
+        type: string
+        description: 书本封面页图片链接
+      detail:
+        type: string
+        description:
+          书本详情图片链接
+      specifications:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: 书本规格属性编号
+            item:
+              type: string
+              description: 书本规格属性名称
+            value:
+              type: string
+              description: 书本规格属性值

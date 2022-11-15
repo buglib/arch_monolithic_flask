@@ -15,6 +15,7 @@ def create_app():
     )
     app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://bookstore:bookstore@localhost:3306/bookstore"
     # app.config["SQLALCHEMY_ECHO"] = True
+    app.config["JSON_AS_ASCII"] = False
     app.register_blueprint(
         v1.bp,
         url_prefix='/v1')

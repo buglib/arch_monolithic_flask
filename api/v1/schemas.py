@@ -50,14 +50,15 @@ class RefNode(object):
 
 base_path = '/v1'
 
-definitions = {'definitions': {'advertisementsModel': {'type': 'array', 'items': {'type': 'object', 'properties': {'id': {'type': 'integer'}, 'image': {'type': 'string', 'description': '广告轮播图中某书本的图片URL', 'example': '/static/carousel/fenix2.png'}, 'productId': {'type': 'integer'}}}}}, 'parameters': {}}
+definitions = {'definitions': {'advertisementsModel': {'type': 'array', 'items': {'type': 'object', 'properties': {'id': {'type': 'integer'}, 'image': {'type': 'string', 'description': '广告轮播图中某书本的图片URL', 'example': '/static/carousel/fenix2.png'}, 'productId': {'type': 'integer'}}}}, 'productModel': {'type': 'object', 'properties': {'id': {'type': 'integer', 'description': '书本编号'}, 'title': {'type': 'string', 'description': '书名'}, 'price': {'type': 'number', 'description': '书本价格'}, 'rate': {'type': 'number', 'description': '优惠折扣'}, 'description': {'type': 'string', 'description': '书本描述'}, 'cover': {'type': 'string', 'description': '书本封面页图片链接'}, 'detail': {'type': 'string', 'description': '书本详情图片链接'}, 'specifications': {'type': 'array', 'items': {'type': 'object', 'properties': {'id': {'type': 'integer', 'description': '书本规格属性编号'}, 'item': {'type': 'string', 'description': '书本规格属性名称'}, 'value': {'type': 'string', 'description': '书本规格属性值'}}}}}}}, 'parameters': {}}
 
 validators = {
 }
 
 filters = {
-    ('', 'GET'): {200: {'headers': {'Content-Type': {'type': 'string'}}, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': None}},
+    ('index', 'GET'): {200: {'headers': {'Content-Type': {'type': 'string'}}, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': None}},
     ('advertisements', 'GET'): {200: {'headers': None, 'schema': {'$ref': '#/definitions/advertisementsModel'}}},
+    ('products', 'GET'): {200: {'headers': None, 'schema': {'type': 'array', 'items': {'$ref': '#/definitions/productModel'}}}},
 }
 
 scopes = {
