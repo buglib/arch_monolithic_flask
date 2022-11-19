@@ -1,0 +1,4 @@
+{
+    "pythonTestExplorer.testFramework": "pytest",
+    "python.testing.pytestEnabled": true
+}
