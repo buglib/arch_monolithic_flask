@@ -62,6 +62,7 @@ filters = {
     ('products', 'GET'): {200: {'headers': None, 'schema': {'type': 'array', 'items': {'$ref': '#/definitions/productModel'}}}},
     ('product', 'GET'): {200: {'headers': None, 'schema': {'$ref': '#/definitions/productModel'}}, 404: {'headers': None, 'schema': None}},
     ('accounts', 'POST'): {200: {'headers': None, 'schema': {'type': 'object', 'example': {'code': 0, 'message': '操作已成功'}, 'properties': {'code': {'type': 'integer'}, 'message': {'type': 'string'}}}}, 400: {'headers': None, 'schema': {'type': 'object', 'example': {'code': 0, 'message': '操作失败，用户已存在'}, 'properties': {'code': {'type': 'integer'}, 'message': {'type': 'string'}}}}},
+    ('account_username', 'GET'): {200: {'headers': None, 'schema': {'example': {'id': 1, 'username': 'icyfenix', 'name': '周志明', 'avatar': '', 'telephone': '18888888888', 'email': 'icyfenix@gmail.com', 'location': '唐家湾港湾大道科技一路3号远光软件股份有限公司'}, 'properties': {'id': {'type': 'integer'}, 'username': {'type': 'string'}, 'name': {'type': 'string'}, 'avatar': {'type': 'string'}, 'telephone': {'type': 'string'}, 'email': {'type': 'string'}, 'location': {'type': 'string'}}}}, 404: {'headers': None, 'schema': {'example': {'code': -1, 'message': '按用户名查找用户失败，即用户不存在'}, 'type': 'object', 'properties': {'code': {'type': 'integer'}, 'message': {'type': 'string'}}}}},
 }
 
 scopes = {

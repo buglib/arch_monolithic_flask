@@ -1,22 +1,13 @@
 from unittest import TestCase
 
-from api import create_app, db
+import pytest as pt
+
 from api.v1.models import db, Account
+from tests.fixtures import api_test_client
 
 
+@pt.mark.usefixtures("api_test_client")
 class AccountsTestCase(TestCase):
-
-    def setUp(self) -> None:
-        self.app = create_app(configName="test")
-        self.context = self.app.app_context()
-        self.context.push()
-        db.create_all()
-        self.client = self.app.test_client()
-
-    def tearDown(self) -> None:
-        db.session.remove()
-        db.drop_all()
-        self.context.pop()
 
     def testReturn200(self):
         jsonData = dict(
