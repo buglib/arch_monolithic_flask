@@ -67,6 +67,63 @@ paths:
             $ref: "#/definitions/productModel"
         "404":
           description: 编号指定的书本不存在
+  /accounts:
+    post:
+      tags: 
+        - Accounts
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: userInfo
+          schema:
+            example:
+              username: buglib
+              email: buglib@foxmail.com
+              password: 5hV62VD9mMbvRKthI563w8tTJs4VHFy
+              telephone: '12345665431'
+            type: object
+            required:
+              - username
+              - email
+              - password
+              - telephone
+            properties:
+              username:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              telephone:
+                type: string
+      responses:
+        "200":
+          description: 成功创建新用户
+          schema:
+            type: object
+            example:
+              code: 0
+              message: 操作已成功
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+        "400":
+          description: 用户已存在
+          schema:
+            type: object
+            example:
+              code: 0
+              message: 操作失败，用户已存在
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
 definitions:
   advertisementsModel:
     type: array

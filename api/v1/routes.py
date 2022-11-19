@@ -12,6 +12,7 @@ from .resources.index import Index
 from .resources.advertisements import Advertisements
 from .resources.products import Products
 from .resources.product import Product
+from .resources.accounts import Accounts
 
 
 routes = [
@@ -19,4 +20,5 @@ routes = [
     dict(resource=Advertisements, urls=['/advertisements'], endpoint='advertisements'),
     dict(resource=Products, urls=['/products'], endpoint='products'),
     dict(resource=Product, urls=['/products/<int:productId>'], endpoint='product'),
+    dict(resource=Accounts, urls=['/accounts'], endpoint='accounts'),
 ]

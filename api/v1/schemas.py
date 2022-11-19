@@ -53,6 +53,7 @@ base_path = '/v1'
 definitions = {'definitions': {'advertisementsModel': {'type': 'array', 'items': {'type': 'object', 'properties': {'id': {'type': 'integer'}, 'image': {'type': 'string', 'description': '广告轮播图中某书本的图片URL', 'example': '/static/carousel/fenix2.png'}, 'productId': {'type': 'integer'}}}}, 'productModel': {'type': 'object', 'properties': {'id': {'type': 'integer', 'description': '书本编号'}, 'title': {'type': 'string', 'description': '书名'}, 'price': {'type': 'number', 'description': '书本价格'}, 'rate': {'type': 'number', 'description': '优惠折扣'}, 'description': {'type': 'string', 'description': '书本描述'}, 'cover': {'type': 'string', 'description': '书本封面页图片链接'}, 'detail': {'type': 'string', 'description': '书本详情图片链接'}, 'specifications': {'type': 'array', 'items': {'type': 'object', 'properties': {'id': {'type': 'integer', 'description': '书本规格属性编号'}, 'item': {'type': 'string', 'description': '书本规格属性名称'}, 'value': {'type': 'string', 'description': '书本规格属性值'}}}}}}}, 'parameters': {}}
 
 validators = {
+    ('accounts', 'POST'): {'json': {'example': {'username': 'buglib', 'email': 'buglib@foxmail.com', 'password': '5hV62VD9mMbvRKthI563w8tTJs4VHFy', 'telephone': '12345665431'}, 'type': 'object', 'required': ['username', 'email', 'password', 'telephone'], 'properties': {'username': {'type': 'string'}, 'email': {'type': 'string'}, 'password': {'type': 'string'}, 'telephone': {'type': 'string'}}}},
 }
 
 filters = {
@@ -60,6 +61,7 @@ filters = {
     ('advertisements', 'GET'): {200: {'headers': None, 'schema': {'$ref': '#/definitions/advertisementsModel'}}},
     ('products', 'GET'): {200: {'headers': None, 'schema': {'type': 'array', 'items': {'$ref': '#/definitions/productModel'}}}},
     ('product', 'GET'): {200: {'headers': None, 'schema': {'$ref': '#/definitions/productModel'}}, 404: {'headers': None, 'schema': None}},
+    ('accounts', 'POST'): {200: {'headers': None, 'schema': {'type': 'object', 'example': {'code': 0, 'message': '操作已成功'}, 'properties': {'code': {'type': 'integer'}, 'message': {'type': 'string'}}}}, 400: {'headers': None, 'schema': {'type': 'object', 'example': {'code': 0, 'message': '操作失败，用户已存在'}, 'properties': {'code': {'type': 'integer'}, 'message': {'type': 'string'}}}}},
 }
 
 scopes = {
