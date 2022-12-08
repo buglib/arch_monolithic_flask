@@ -185,11 +185,16 @@ paths:
         - in: query
           name: username
           type: string
-          required: True
+          required: False
         - in: query
           name: password
           type: string
-          required: True
+          required: False
+        - in: query
+          name: refresh_token
+          type: string
+          required: False
+          description: 如果该字段为空，则用户名和密码不能同时为空
         - in: query
           name: grant_type
           type: string

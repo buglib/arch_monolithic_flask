@@ -15,41 +15,95 @@ class OauthToken(Resource):
     def get(self):
         username = request.args.get("username", None)
         password = request.args.get("password", None)
+        refresh_token = request.args.get("refresh_token", None)
         grant_type = request.args.get("grant_type", None)
         client_id = request.args.get("client_id", None)
         client_secret = request.args.get("client_secret", None)
-    
-        user = Account.query.filter_by(username=username).first()
-        if not user:
-            resp_body = dict(
-                status="Fail to get access token",
-                message="User '%s' not found" % username
-            )
-            status_code = 404
-        elif not user.check_password(password=password):
-            resp_body = dict(
-                status="Fail to get access token",
-                message="Invalid password for user '%s'" % username
-            )
-        elif grant_type != "password":
+
+        if username and password:
+            user = Account.query.filter_by(username=username).first()
+            if not user:
+                resp_body = dict(
+                    status="Fail to get access token",
+                    message="User '%s' not found" % username
+                )
+                status_code = 404
+                return resp_body, status_code
+
+            if not user.check_password(password):
+                resp_body = dict(
+                    status="Fail to get access token",
+                    message="Invalid password for user '%s'" % username
+                )
+                status_code = 400
+                return resp_body, status_code
+
+        elif refresh_token:
+            token_record = Oauth2Token.query.filter_by(refresh_token=refresh_token).first()
+            if not token_record:
+                resp_body = dict(
+                    status="Fail to get access token",
+                    message="Invalid refresh token"
+                )
+                status_code = 400
+                return resp_body, status_code
+            else:
+                user = token_record.user
+
+        # # 通过用户名和密码获取访问令牌
+        # user = None
+        # if not refresh_token:
+        #     user = Account.query.filter_by(username=username).first()
+        # # 通过刷新令牌获取访问令牌
+        # else:
+        #     token_record = Oauth2Token.query.filter_by(refresh_token=refresh_token).first()
+        #     if not token_record:
+        #         resp_body = dict(
+        #             status="Fail to get access token",
+        #             message="Invalid refresh token"
+        #         )
+        #         status_code = 400
+        #         return resp_body, status_code
+        #     else:
+        #         user = token_record.user
+        # if not user:
+        #     resp_body = dict(
+        #         status="Fail to get access token",
+        #         message="User '%s' not found" % username
+        #     )
+        #     status_code = 404
+        # elif user and password is not None and not user.check_password(password=password):
+        #     resp_body = dict(
+        #         status="Fail to get access token",
+        #         message="Invalid password for user '%s'" % username
+        #     )
+        #     status_code = 400
+        if grant_type != "password":
             resp_body = dict(
                 status="Fail to get access token",
                 message="Grant type must be password"
             )
             status_code = 400
+            return resp_body, status_code
+
         elif client_id != current_app.config["OAUTH2_CLIENT_ID"]:
             resp_body = dict(
                 status="Fail to get access token",
                 message="Invalid client id for user '%s'" % username
             )
             status_code = 400
+            return resp_body, status_code
+
         elif client_secret != current_app.config["OAUTH2_CLIENT_SECRET"]:
             resp_body = dict(
                 status="Fail to get access token",
                 message="Invalid client secret for user '%s'" % username
             )
             status_code = 400
+            return resp_body, status_code
+
         else:
+            username = user.username
             token_type = "bearer"
             authorities = [
                 "ROLE_USER",
@@ -116,8 +170,10 @@ class OauthToken(Resource):
             try:
                 db.session.commit()
             except Exception as e:
+                print("-" * 50)
                 print(e)
+                print("-" * 50)
                 SystemExit()
             status_code = 200
-        return resp_body, status_code
+            return resp_body, status_code
 

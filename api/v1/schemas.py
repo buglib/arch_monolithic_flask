@@ -54,7 +54,7 @@ definitions = {'definitions': {'advertisementsModel': {'type': 'array', 'items':
 
 validators = {
     ('accounts', 'POST'): {'json': {'example': {'username': 'buglib', 'email': 'buglib@foxmail.com', 'password': '5hV62VD9mMbvRKthI563w8tTJs4VHFy', 'telephone': '12345665431'}, 'type': 'object', 'required': ['username', 'email', 'password', 'telephone'], 'properties': {'username': {'type': 'string'}, 'email': {'type': 'string'}, 'password': {'type': 'string'}, 'telephone': {'type': 'string'}}}},
-    ('oauth_token', 'GET'): {'args': {'required': ['username', 'password', 'grant_type', 'client_id', 'client_secret'], 'properties': {'username': {'type': 'string'}, 'password': {'type': 'string'}, 'grant_type': {'type': 'string'}, 'client_id': {'type': 'string'}, 'client_secret': {'type': 'string'}}}},
+    ('oauth_token', 'GET'): {'args': {'required': ['grant_type', 'client_id', 'client_secret'], 'properties': {'username': {'type': 'string', 'required': False}, 'password': {'type': 'string', 'required': False}, 'refresh_token': {'type': 'string', 'required': False, 'description': '如果该字段为空，则用户名和密码不能同时为空'}, 'grant_type': {'type': 'string'}, 'client_id': {'type': 'string'}, 'client_secret': {'type': 'string'}}}},
 }
 
 filters = {
