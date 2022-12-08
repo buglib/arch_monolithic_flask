@@ -9,7 +9,7 @@ from tests.fixtures import api_test_client
 @pt.mark.usefixtures("api_test_client")
 class AccountsTestCase(TestCase):
 
-    def testReturn200(self):
+    def test_return_200(self):
         jsonData = dict(
             username="buglib",
             password="123456",
@@ -20,7 +20,7 @@ class AccountsTestCase(TestCase):
         assert resp.status_code == 200
         assert resp.json["code"] == 0 and resp.json["message"] == "操作成功"
 
-    def testReturn400(self):
+    def test_return_400(self):
         user = Account(
             username="Messi",
             password="123",

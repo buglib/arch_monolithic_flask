@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
+import time
 
-from flask import g
+from flask import current_app, g
 
 from . import Resource
-from ..models import db, Account
+from ..models import db, Account, Oauth2Client
 
 
 class Accounts(Resource):
@@ -21,6 +22,7 @@ class Accounts(Resource):
             # status_code = 400
             return resp_body, 400
         else:
+            # 新建用户
             user = Account(
                 username=username,
                 password=g.json["password"],
@@ -28,6 +30,16 @@ class Accounts(Resource):
                 telephone=g.json["telephone"]
             )
             db.session.add(user)
+            db.session.commit()
+            # 关联认证用到的客户端信息
+            client = Oauth2Client(
+                client_id=current_app.config["OAUTH2_CLIENT_ID"],
+                client_secret=current_app.config["OAUTH2_CLIENT_SECRET"],
+                client_id_issued_at=time.time(),
+                client_secret_expires_at=0,
+                user_id=user.id
+            )
+            db.session.add(client)
             db.session.commit()
             resp_body = dict(
                 code=0,

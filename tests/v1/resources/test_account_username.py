@@ -29,7 +29,7 @@ class AccountUsernameTestCase(TestCase):
         assert resp.json["avatar"] is None
 
     def test_return_404(self):
-        resp = self.client.get("/v1/account/messi")
+        resp = self.client.get("/v1/account/Luccy")
         assert resp.status_code == 404
         assert resp.json["code"] == -1
         assert resp.json["message"] == "按用户名查找用户失败，即用户不存在"
