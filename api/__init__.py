@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 from flask import Flask
+from flask_migrate import Migrate
 
 from . import v1
 from .settings import configs
@@ -22,6 +23,7 @@ def create_app(configName: str = "default"):
         v1.bp,
         url_prefix='/v1')
     db.init_app(app=app)
+    Migrate(app=app, db=db)
     return app
 
 if __name__ == '__main__':

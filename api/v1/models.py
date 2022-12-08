@@ -18,6 +18,8 @@ class Account(db.Model):
     email = db.Column(db.String(100))
     location = db.Column(db.String(100))
 
+    def check_password(self, password):
+        return password == self.password
 
 
 class Advertisement(db.Model):
@@ -89,3 +91,36 @@ class Wallet(db.Model):
     account_id = db.Column(db.ForeignKey('account.id', ondelete='CASCADE'), index=True)
 
     account = db.relationship('Account', primaryjoin='Wallet.account_id == Account.id', backref='wallets')
+
+
+class Oauth2Client(db.Model):
+    __tablename__ = 'oauth2_client'
+
+    client_id = db.Column(db.String(48), index=True)
+    client_secret = db.Column(db.String(120))
+    client_id_issued_at = db.Column(db.Integer, nullable=False)
+    client_secret_expires_at = db.Column(db.Integer, nullable=False)
+    client_metadata = db.Column(db.Text)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False, index=True)
+
+    user = db.relationship('Account', primaryjoin='Oauth2Client.user_id == Account.id', backref='oauth2_clients')
+
+
+
+class Oauth2Token(db.Model):
+    __tablename__ = 'oauth2_token'
+
+    client_id = db.Column(db.String(48))
+    token_type = db.Column(db.String(40))
+    access_token = db.Column(db.String(512), nullable=False, unique=True)
+    refresh_token = db.Column(db.String(512), index=True)
+    scope = db.Column(db.Text)
+    issued_at = db.Column(db.Integer, nullable=False)
+    access_token_revoked_at = db.Column(db.Integer, nullable=False)
+    refresh_token_revoked_at = db.Column(db.Integer, nullable=False)
+    expires_in = db.Column(db.Integer, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.ForeignKey('account.id', ondelete='CASCADE'), index=True)
+
+    user = db.relationship('Account', primaryjoin='Oauth2Token.user_id == Account.id', backref='oauth2_tokens')
