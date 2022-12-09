@@ -2,7 +2,7 @@
 from __future__ import absolute_import, print_function
 import time
 
-from flask import current_app, g
+from flask import current_app, g, request
 
 from . import Resource
 from ..models import db, Account, Oauth2Client
@@ -47,3 +47,31 @@ class Accounts(Resource):
             )
             # status_code = 200
         return resp_body, 200
+
+    def put(self):
+        user_id = request.json.get("id", None)
+        username = request.json.get("username", None)
+        email = request.json.get("email", None)
+        telephone = request.json.get("telephone", None)
+        name = request.json.get("name", None)
+        avatar = request.json.get("avatar", None)
+        location = request.json.get("location", None)
+
+        user = Account.query.filter_by(id=user_id).first()
+        if not user:
+            user = Account.query.filter_by(username=username).first()
+        if user:
+            user.username = username
+            user.email = email
+            user.telephone = telephone
+            user.name = name
+            user.avatar = avatar
+            user.location = location
+            db.session.add(user)
+            db.session.commit()
+        resp_body = dict(
+            status="done",
+            message="Succeed to update user '%s'" % username
+        )
+        status_code = 200
+        return resp_body, status_code

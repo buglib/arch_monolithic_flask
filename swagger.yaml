@@ -124,6 +124,59 @@ paths:
                 type: integer
               message:
                 type: string
+    put:
+      tags:
+        - Account
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          schema:
+            type: object
+            required:
+              - id
+              - username
+            example:
+              id: 1
+              username: icyfenix
+              name: 周志明
+              avatar: https://www.gravatar.com/avatar/1563e833e42fb64b41eed34c9b66d723?d=mp
+              telephone: '18888888888'
+              email: icyfenix@gmail.com
+              location: 唐家湾港湾大道科技一路3号远光软件股份有限公司
+            properties:
+              id:
+                type: integer
+              username:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              telephone:
+                type: string
+              avatar:
+                type: string
+              name:
+                type: string
+              location:
+                type: string
+      responses:
+        "200":
+          description: 更新用户信息
+          schema:
+            type: object
+            example:
+              status: done
+              message: Succeed to update user 'Messi'
+            properties:
+              status:
+                type: string
+              message:
+                type: string
   /accounts/{username}:
     get:
       tags:
