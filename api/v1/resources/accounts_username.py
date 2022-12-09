@@ -7,7 +7,7 @@ from . import Resource
 from ..models import Account
 
 
-class AccountUsername(Resource):
+class AccountsUsername(Resource):
 
     def get(self, username):
         user = Account.query.filter_by(username=username).first()

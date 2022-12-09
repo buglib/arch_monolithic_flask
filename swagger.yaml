@@ -124,7 +124,7 @@ paths:
                 type: integer
               message:
                 type: string
-  /account/{username}:
+  /accounts/{username}:
     get:
       tags:
         - Account
