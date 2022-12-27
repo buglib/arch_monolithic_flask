@@ -74,31 +74,6 @@ paths:
                 type: string
               message:
                 type: string
-    put:
-      tags:
-        - Products
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: product
-          schema:
-            $ref: "#/definitions/productModel"
-      responses:
-        "200":
-          description: 成功更新书本产品信息
-          schema:
-            type: object
-            example:
-              status: done
-              message: Succeed to update product
-            properties:
-              status:
-                type: string
-              message:
-                type: string
   /products/{productId}:
     get:
       tags:
@@ -141,6 +116,104 @@ paths:
             example:
               status: done
               message: Succeed to update product
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+    delete:
+      tags:
+        - Product
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          type: integer
+          name: productId
+          required: true
+      responses:
+        "200":
+          description: 成功删除给定编号对应的商品
+          schema:
+            type: object
+            example:
+              status: done
+              message: Succeed to remove product
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+        "404":
+          description: 待删除的商品并不存在
+          schema:
+            type: object
+            example:
+              status: fail
+              message: Fail to remove product, because product not found
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+  /products/stockpile/{productId}:
+    get:
+      tags:
+        - Stockpile
+      produces:
+        - application/json
+      parameters:
+        - name: productId
+          in: path
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: 成功获取指定编号对应的商品库存
+          schema:
+            $ref: "#/definitions/stockpileModel"
+        "404":
+          description: 获取指定编号对应的商品库存失败
+          schema:
+            type: object
+            example:
+              status: fail
+              message: fail to get stockpile for product '1', product '1' may be not found
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+    patch:
+      tags:
+        - Stockpile
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: productId
+          in: path
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: 成功修改商品编号指定的库存
+          schema:
+            example:
+              status: done
+              message: succeed to update stockpile for product '1'
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+        "400":
+          description: 修改商品编号指定的库存失败
+          schema:
+            example:
+              status: done
+              message: fail to update stockpile for product '1', product '1' may be not found
             properties:
               status:
                 type: string
@@ -467,3 +540,18 @@ definitions:
       jti:
         type: string
         description: JWT标识符
+  stockpileModel:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: 库存编号
+      product_id:
+        type: integer
+        description: 商品编号
+      amount:
+        type: integer
+        description: 商品总数
+      frozen:
+        type: integer
+        description: 商品不可售的数量
