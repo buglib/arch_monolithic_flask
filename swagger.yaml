@@ -49,6 +49,56 @@ paths:
             type: array
             items:
               $ref: "#/definitions/productModel"
+    post:
+      tags:
+        - Products
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: product
+          schema:
+            $ref: "#/definitions/productModel"
+      responses:
+        "200":
+          description: 成功新建书本产品
+          schema:
+            type: object
+            example:
+              status: done
+              message: Succeed to add new product
+            properties:
+              status:
+                type: string
+              message:
+                type: string
+    put:
+      tags:
+        - Products
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: product
+          schema:
+            $ref: "#/definitions/productModel"
+      responses:
+        "200":
+          description: 成功更新书本产品信息
+          schema:
+            type: object
+            example:
+              status: done
+              message: Succeed to update product
+            properties:
+              status:
+                type: string
+              message:
+                type: string
   /products/{productId}:
     get:
       tags:
@@ -67,6 +117,35 @@ paths:
             $ref: "#/definitions/productModel"
         "404":
           description: 编号指定的书本不存在
+    put:
+      tags:
+        - Product
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          type: integer
+          name: productId
+          required: True
+        - in: body
+          name: product
+          schema:
+            $ref: "#/definitions/productModel"
+      responses:
+        "200":
+          description: 成功更新书本产品信息
+          schema:
+            type: object
+            example:
+              status: done
+              message: Succeed to update product
+            properties:
+              status:
+                type: string
+              message:
+                type: string
   /accounts:
     post:
       tags: 

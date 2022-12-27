@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
 
-from flask import jsonify
+from flask import jsonify, request
 
 from . import Resource
-from ..models import Product
+from ..models import db, Product, Specification
 
 
 class Products(Resource):
@@ -37,3 +37,28 @@ class Products(Resource):
         resp = jsonify(respBody)
         resp.content_encoding = "utf-8"
         return resp
+
+    def post(self):
+        data = request.json
+        title = data.get("title", None)
+        price = data.get("price", None)
+        rate = data.get("rate", None)
+        desc = data.get("description", None)
+        cover = data.get("cover", None)
+        detail = data.get("detail", None)
+        product = Product(
+            title=title,
+            price=price,
+            rate=rate,
+            description=desc,
+            cover=cover,
+            detail=detail
+        )
+        db.session.add(product)
+        db.session.commit()
+        resp_body = dict(
+            status="done",
+            message="Succeed to add new product"
+        )
+        status_code = 200
+        return resp_body, status_code
