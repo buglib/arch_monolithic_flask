@@ -22,6 +22,7 @@ from authlib.oauth2.rfc6749.errors import (
     InvalidRequestError,
     InvalidGrantError,
 )
+from authlib.oauth2.rfc6750 import BearerTokenValidator as BaseBearerTokenValidator
 from flask import Flask, current_app
 import jwt
 
@@ -287,8 +288,10 @@ def save_token(token_data, request):
         scope=token_data.get("scope", None),
         issued_at=round(time.time()),
         expires_in=token_data.get("expires_in", 0),
-        access_token_revoked_at=token_data.get("expires_in", 0),
-        refresh_token_revoked_at=token_data.get("refresh_token_expires_in", 0)
+        # access_token_revoked_at=token_data.get("expires_in", 0),
+        # refresh_token_revoked_at=token_data.get("refresh_token_expires_in", 0)
+        access_token_revoked_at=0,
+        refresh_token_revoked_at=0
     )
     db.session.add(token)
     db.session.commit()
@@ -301,6 +304,14 @@ authorization_server = AuthorizationServer(
     save_token=save_token
 )
 require_oauth2 = ResourceProtector()
+
+
+# class BearerTokenValidator(BaseBearerTokenValidator):
+
+#     def authenticate_token(self, token_string):
+#         # return super().authenticate_token(token_string)
+#         token = OAuth2Token.query.filter_by(access_token=token_string).first()
+#         return token
 
 
 def register_oauth2(app: Flask):
@@ -316,3 +327,4 @@ def register_oauth2(app: Flask):
     # protect resource
     bearer_cls = create_bearer_token_validator(db.session, OAuth2Token)
     require_oauth2.register_token_validator(bearer_cls())
+    # require_oauth2.register_token_validator(BearerTokenValidator)
