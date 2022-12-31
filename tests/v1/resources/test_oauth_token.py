@@ -1,18 +1,18 @@
 from pprint import pprint
-from unittest import TestCase
 import json
 import time
 
 import pytest as pt
 
 from api.v1.models import db, Account, OAuth2Client
-from tests.fixtures import api_test_client
+from tests.fixtures import testing_app_and_client
 
 
-@pt.mark.usefixtures("api_test_client")
-class OauthTokenTestCase(TestCase):
+@pt.mark.usefixtures("testing_app_and_client")
+class TestOauthTokenResource:
 
-    def test_with_username_and_password(self):
+    def test_with_username_and_password(self, testing_app_and_client):
+        app, cli = testing_app_and_client
         # 先新建一个用户
         user = Account(
             username="Messi",
@@ -33,8 +33,8 @@ class OauthTokenTestCase(TestCase):
             ensure_ascii=False
         )
         client = OAuth2Client(
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"],
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"],
             client_id_issued_at=int(time.time()),
             client_secret_expires_at=0,
             user_id=user.id,
@@ -48,11 +48,11 @@ class OauthTokenTestCase(TestCase):
             username=user.username,
             password=user.password,
             grant_type="password",
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"]
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"]
         )
         url = "/v1/oauth/token?username={username}&password={password}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         # print("-" * 50)
         # # print(url)
         # pprint(resp.json)
@@ -63,7 +63,8 @@ class OauthTokenTestCase(TestCase):
         assert resp.json["authorities"] == ["ROLE_USER", "ROLE_ADMIN"]
         assert resp.json["scope"] == "ALL"
 
-    def test_with_refresh_token(self):
+    def test_with_refresh_token(self, testing_app_and_client):
+        app, cli = testing_app_and_client
         # 先创建一个新用户
         user = Account(
             username="James",
@@ -84,8 +85,8 @@ class OauthTokenTestCase(TestCase):
             ensure_ascii=False
         )
         client = OAuth2Client(
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"],
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"],
             client_id_issued_at=int(time.time()),
             client_secret_expires_at=0,
             user_id=user.id,
@@ -99,11 +100,11 @@ class OauthTokenTestCase(TestCase):
             username=user.username,
             password=user.password,
             grant_type="password",
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"]
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"]
         )
         url = "/v1/oauth/token?username={username}&password={password}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         assert resp.status_code == 200
         refresh_token = resp.json["refresh_token"]
 
@@ -113,24 +114,26 @@ class OauthTokenTestCase(TestCase):
         request_params["grant_type"] = "refresh_token"
         request_params["refresh_token"] = refresh_token
         url = "/v1/oauth/token?refresh_token={refresh_token}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         # pprint(resp.json)
         assert resp.status_code == 200
 
-    def test_user_not_found(self):
+    def test_user_not_found(self, testing_app_and_client):
+        app, cli = testing_app_and_client
         request_params = dict(
             username="Neymar",
             password="123",
             grant_type="password",
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"]
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"]
         )
         url = "/v1/oauth/token?username={username}&password={password}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         assert resp.status_code == 400
         assert resp.json["error"] == "invalid_request"
 
-    def test_invalid_client_id(self):
+    def test_invalid_client_id(self, testing_app_and_client):
+        app, cli = testing_app_and_client
         user = Account(
             username="CR7",
             password="123",
@@ -150,8 +153,8 @@ class OauthTokenTestCase(TestCase):
             ensure_ascii=False
         )
         client = OAuth2Client(
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"],
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"],
             client_id_issued_at=int(time.time()),
             client_secret_expires_at=0,
             user_id=user.id,
@@ -165,14 +168,15 @@ class OauthTokenTestCase(TestCase):
             password="123",
             grant_type="password",
             client_id="CR7",
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"]
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"]
         )
         url = "/v1/oauth/token?username={username}&password={password}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         assert resp.status_code == 400
         assert resp.json["error"] == "invalid_client"
 
-    def test_invalid_client_secret(self):
+    def test_invalid_client_secret(self, testing_app_and_client):
+        app, cli = testing_app_and_client
         user = Account(
             username="Kobe",
             password="123",
@@ -192,8 +196,8 @@ class OauthTokenTestCase(TestCase):
             ensure_ascii=False
         )
         client = OAuth2Client(
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"],
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"],
             client_id_issued_at=int(time.time()),
             client_secret_expires_at=0,
             user_id=user.id,
@@ -206,15 +210,16 @@ class OauthTokenTestCase(TestCase):
             username="Kobe",
             password="123",
             grant_type="password",
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
+            client_id=app.config["OAUTH2_CLIENT_ID"],
             client_secret="123"
         )
         url = "/v1/oauth/token?username={username}&password={password}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         assert resp.status_code == 400
         assert resp.json["error"] == "invalid_client"
 
-    def test_invalid_refresh_token(self):
+    def test_invalid_refresh_token(self, testing_app_and_client):
+        app, cli = testing_app_and_client
         # 先创建一个新用户
         user = Account(
             username="Bob",
@@ -235,8 +240,8 @@ class OauthTokenTestCase(TestCase):
             ensure_ascii=False
         )
         client = OAuth2Client(
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"],
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"],
             client_id_issued_at=int(time.time()),
             client_secret_expires_at=0,
             user_id=user.id,
@@ -250,11 +255,11 @@ class OauthTokenTestCase(TestCase):
             username=user.username,
             password=user.password,
             grant_type="password",
-            client_id=self.app.config["OAUTH2_CLIENT_ID"],
-            client_secret=self.app.config["OAUTH2_CLIENT_SECRET"]
+            client_id=app.config["OAUTH2_CLIENT_ID"],
+            client_secret=app.config["OAUTH2_CLIENT_SECRET"]
         )
         url = "/v1/oauth/token?username={username}&password={password}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         assert resp.status_code == 200
         refresh_token = "123"
 
@@ -264,7 +269,7 @@ class OauthTokenTestCase(TestCase):
         request_params["grant_type"] = "refresh_token"
         request_params["refresh_token"] = refresh_token
         url = "/v1/oauth/token?refresh_token={refresh_token}&grant_type={grant_type}&client_id={client_id}&client_secret={client_secret}".format(**request_params)
-        resp = self.client.get(url)
+        resp = cli.get(url)
         assert resp.status_code == 400
         # pprint(resp.json)
         assert resp.json["error"] == "invalid_grant"
