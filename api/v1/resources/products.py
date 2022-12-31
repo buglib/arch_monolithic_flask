@@ -4,10 +4,15 @@ from __future__ import absolute_import, print_function
 from flask import jsonify, request
 
 from . import Resource
+from ..extensions.oauth2 import require_oauth2
 from ..models import db, Product, Specification
 
 
 class Products(Resource):
+
+    method_decorators = {
+        "post": [require_oauth2(scopes="ALL")]
+    }
 
     def get(self):
         prods = Product.query.all()
