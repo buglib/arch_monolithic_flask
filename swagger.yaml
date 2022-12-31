@@ -417,36 +417,43 @@ paths:
           description: 成功获得令牌
           schema:
             $ref: "#/definitions/tokenModel"
-        "404":
-          description: 用户不存在
-          schema:
-            type: object
-            properties:
-              status:
-                type: string
-                description: 操作状态
-                example: Fail to get access token
-              message:
-                type: string
-                description: 操作状态详述
-                example: User 'Messi' not found
+        # "404":
+        #   description: 用户不存在
+        #   schema:
+        #     type: object
+        #     properties:
+        #       status:
+        #         type: string
+        #         description: 操作状态
+        #         example: Fail to get access token
+        #       message:
+        #         type: string
+        #         description: 操作状态详述
+        #         example: User 'Messi' not found
         "400":
-          description: 请求参数有误，例如密码错误，认证授权模式有误
+          description: 请求有误，例如密码错误，认证授权模式有误
           schema:
             type: object
             properties:
-              status:
+              # status:
+              #   type: string
+              #   description: 操作状态
+              #   example: Fail to get access token
+              # message:
+              #   type: string
+              #   description: 操作状态详述
+              #   example: 
+              #     - Invalid password for user 'Messi'
+              #     - Grant type must be password
+              #     - Invalid client id for user 'Messi'
+              #     - Invalid client secret for user 'Messi'
+              error:
                 type: string
-                description: 操作状态
-                example: Fail to get access token
-              message:
-                type: string
-                description: 操作状态详述
-                example: 
-                  - Invalid password for user 'Messi'
-                  - Grant type must be password
-                  - Invalid client id for user 'Messi'
-                  - Invalid client secret for user 'Messi'
+                description: 错误信息
+                example:
+                  - invalid_request
+                  - invalid_client
+                  - invalid_grant
 definitions:
   advertisementsModel:
     type: array

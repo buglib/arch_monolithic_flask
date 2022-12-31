@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 
 from . import v1
 from .settings import configs
+from .v1.extensions.oauth2 import register_oauth2
 from .v1.models import db
 
 
@@ -24,6 +25,7 @@ def create_app(configName: str = "default"):
         url_prefix='/v1')
     db.init_app(app=app)
     Migrate(app=app, db=db)
+    register_oauth2(app=app)
     return app
 
 if __name__ == '__main__':

@@ -1,4 +1,10 @@
 # coding: utf-8
+import time
+
+from authlib.integrations.sqla_oauth2 import (
+    OAuth2ClientMixin,
+    OAuth2TokenMixin
+)
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -18,7 +24,10 @@ class Account(db.Model):
     email = db.Column(db.String(100))
     location = db.Column(db.String(100))
 
-    def check_password(self, password):
+    def get_user_id(self):
+        return self.id
+
+    def check_password(self, password: str):
         return password == self.password
 
 
@@ -93,34 +102,63 @@ class Wallet(db.Model):
     account = db.relationship('Account', primaryjoin='Wallet.account_id == Account.id', backref='wallets')
 
 
-class Oauth2Client(db.Model):
-    __tablename__ = 'oauth2_client'
+# class Oauth2Client(db.Model):
+#     __tablename__ = 'oauth2_client'
 
-    client_id = db.Column(db.String(48), index=True)
-    client_secret = db.Column(db.String(120))
-    client_id_issued_at = db.Column(db.Integer, nullable=False)
-    client_secret_expires_at = db.Column(db.Integer, nullable=False)
-    client_metadata = db.Column(db.Text)
+#     client_id = db.Column(db.String(48), index=True)
+#     client_secret = db.Column(db.String(120))
+#     client_id_issued_at = db.Column(db.Integer, nullable=False)
+#     client_secret_expires_at = db.Column(db.Integer, nullable=False)
+#     client_metadata = db.Column(db.Text)
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False, index=True)
+
+#     user = db.relationship('Account', primaryjoin='Oauth2Client.user_id == Account.id', backref='oauth2_clients')
+
+class OAuth2Client(db.Model, OAuth2ClientMixin):
+    __tablename__ = "oauth2_client"
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.ForeignKey('account.id', ondelete='CASCADE'), nullable=False, index=True)
+    user_id = db.Column(db.ForeignKey("account.id", ondelete="CASCADE"))
+    user = db.relationship("Account")
 
-    user = db.relationship('Account', primaryjoin='Oauth2Client.user_id == Account.id', backref='oauth2_clients')
+    # @property
+    # def token_endpoint_auth_method(self):
+    #     return self.client_metadata.get(
+    #         'token_endpoint_auth_method',
+    #         'none'
+    #     )
 
 
+# class Oauth2Token(db.Model):
+#     __tablename__ = 'oauth2_token'
 
-class Oauth2Token(db.Model):
-    __tablename__ = 'oauth2_token'
+#     client_id = db.Column(db.String(48))
+#     token_type = db.Column(db.String(40))
+#     access_token = db.Column(db.String(1024), nullable=False, unique=True)
+#     refresh_token = db.Column(db.String(1024), index=True)
+#     scope = db.Column(db.Text)
+#     issued_at = db.Column(db.Integer, nullable=False)
+#     access_token_revoked_at = db.Column(db.BigInteger, nullable=False)
+#     refresh_token_revoked_at = db.Column(db.BigInteger, nullable=False)
+#     expires_in = db.Column(db.Integer, nullable=False)
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.ForeignKey('account.id', ondelete='CASCADE'), index=True)
 
-    client_id = db.Column(db.String(48))
-    token_type = db.Column(db.String(40))
-    access_token = db.Column(db.String(1024), nullable=False, unique=True)
-    refresh_token = db.Column(db.String(1024), index=True)
-    scope = db.Column(db.Text)
-    issued_at = db.Column(db.Integer, nullable=False)
-    access_token_revoked_at = db.Column(db.BigInteger, nullable=False)
-    refresh_token_revoked_at = db.Column(db.BigInteger, nullable=False)
-    expires_in = db.Column(db.Integer, nullable=False)
+#     user = db.relationship('Account', primaryjoin='Oauth2Token.user_id == Account.id', backref='oauth2_tokens')
+
+class OAuth2Token(db.Model, OAuth2TokenMixin):
+    __tablename__ = "oauth2_token"
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.ForeignKey('account.id', ondelete='CASCADE'), index=True)
+    access_token = db.Column(db.String(512), unique=True, nullable=False)
+    refresh_token = db.Column(db.String(512), index=True)
+    access_token_revoked_at = db.Column(db.BigInteger, nullable=False, default=0)
+    refresh_token_revoked_at = db.Column(db.BigInteger, nullable=False, default=0)
+    expires_in = db.Column(db.BigInteger, nullable=False, default=0)
+    user_id = db.Column(db.Integer, db.ForeignKey("account.id", ondelete="CASCADE"))
+    user = db.relationship("Account")
 
-    user = db.relationship('Account', primaryjoin='Oauth2Token.user_id == Account.id', backref='oauth2_tokens')
+    def is_refresh_token_active(self):
+        expires_at = self.issued_at + self.expires_in
+        return expires_at >= time.time()
