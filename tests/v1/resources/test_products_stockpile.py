@@ -1,5 +1,3 @@
-from unittest import TestCase
-
 import pytest as pt
 
 
@@ -8,13 +6,18 @@ from api.v1.models import (
     Product,
     Stockpile
 )
-from tests.fixtures import api_test_client
+from tests.fixtures import (
+    testing_app_and_client,
+    testing_user_and_tokens
+)
 
 
-@pt.mark.usefixtures("api_test_client")
-class StockpileTestCase(TestCase):
+@pt.mark.usefixtures("testing_app_and_client")
+class TestStockpileResource:
 
-    def test_get_return_200(self):
+    def test_get_return_200(self, testing_app_and_client, testing_user_and_tokens):
+        _, client = testing_app_and_client
+        headers, _, _, _ = testing_user_and_tokens
         data = {
             "title": "深入理解Java虚拟机（第3版）",
             "price": 129,
@@ -51,10 +54,15 @@ class StockpileTestCase(TestCase):
         db.session.add(product)
         db.session.commit()
 
-        resp = self.client.get("/v1/products/stockpile/{}".format(product.id))
+        resp = client.get(
+            "/v1/products/stockpile/{}".format(product.id),
+            headers=headers
+        )
         assert resp.status_code == 200
 
-    def test_patch_return_200(self):
+    def test_patch_return_200(self, testing_app_and_client, testing_user_and_tokens):
+        _, client = testing_app_and_client
+        headers, _, _, _ = testing_user_and_tokens
         data = {
             "title": "深入理解Java虚拟机（第4版）",
             "price": 139,
@@ -96,5 +104,9 @@ class StockpileTestCase(TestCase):
             amount=1,
             frozen=0
         )
-        resp = self.client.patch("/v1/products/stockpile/{}".format(product.id), json=json_data)
+        resp = client.patch(
+            "/v1/products/stockpile/{}".format(product.id), 
+            json=json_data,
+            headers=headers
+        )
         assert resp.status_code == 200

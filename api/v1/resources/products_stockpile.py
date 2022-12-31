@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function
 from flask import request
 
 from . import Resource
+from ..extensions.oauth2 import require_oauth2
 from ..models import (
     db,
     Product,
@@ -12,6 +13,8 @@ from ..models import (
 
 
 class ProductsStockpile(Resource):
+
+    method_decorators = [require_oauth2(scopes="ALL")]
 
     def get(self, productId):
         product = Product.query.filter_by(id=productId).first()
@@ -45,11 +48,11 @@ class ProductsStockpile(Resource):
             try:
                 # stockpile(**json_data)
                 amount = json_data.get("amount", None)
-                frozen = json_data.get("frozen", None)
+                # frozen = json_data.get("frozen", None)
                 if amount:
                     stockpile.amount = amount
-                if frozen:
-                    stockpile.frozen = frozen
+                # if frozen:
+                #     stockpile.frozen = frozen
                 db.session.add(stockpile)
                 db.session.commit()
             except Exception as e:
