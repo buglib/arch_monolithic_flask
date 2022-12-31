@@ -1,15 +1,17 @@
-from unittest import TestCase
-
 import pytest as pt
 
 from api.v1.models import db, Product, Specification
-from tests.fixtures import api_test_client
+from tests.fixtures import (
+    testing_app_and_client,
+    testing_user_and_tokens
+)
 
 
-@pt.mark.usefixtures("api_test_client")
-class ProductTestCase(TestCase):
+@pt.mark.usefixtures("testing_app_and_client")
+class TestProductResource:
 
-    def test_get_return_200(self):
+    def test_get_return_200(self, testing_app_and_client):
+        _, client = testing_app_and_client
         data = {
             "title": "深入理解Java虚拟机（第3版）",
             "price": 129,
@@ -42,10 +44,12 @@ class ProductTestCase(TestCase):
         db.session.add(product)
         db.session.commit()
 
-        resp = self.client.get("/v1/products/{product_id}".format(product_id=product.id))
+        resp = client.get("/v1/products/{product_id}".format(product_id=product.id))
         assert resp.status_code == 200
 
-    def test_put_return_200(self):
+    def test_put_return_200(self, testing_app_and_client, testing_user_and_tokens):
+        _, client = testing_app_and_client
+        headers, _, _, _ = testing_user_and_tokens
         json_data = {
             "id": 1,
             "title": "深入理解Java虚拟机（第3版）",
@@ -62,10 +66,16 @@ class ProductTestCase(TestCase):
                 }
             ]
         }
-        resp = self.client.put("/v1/products/1", json=json_data)
+        resp = client.put(
+            "/v1/products/1", 
+            json=json_data,
+            headers=headers
+        )
         assert resp.status_code == 200
 
-    def test_delete_return_200(self):
+    def test_delete_return_200(self, testing_app_and_client, testing_user_and_tokens):
+        _, client = testing_app_and_client
+        headers, _, _, _ = testing_user_and_tokens
         data = {
             "title": "深入理解Java虚拟机（第3版）",
             "price": 129,
@@ -98,5 +108,8 @@ class ProductTestCase(TestCase):
         db.session.add(product)
         db.session.commit()
 
-        resp = self.client.delete("/v1/products/{productId}".format(productId=product.id))
+        resp = client.delete(
+            "/v1/products/{productId}".format(productId=product.id),
+            headers=headers
+        )
         assert resp.status_code == 200

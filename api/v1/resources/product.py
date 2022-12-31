@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function
 from flask import jsonify, request
 
 from . import Resource
-# from ..models import Product as ProductModel, Specification
+from ..extensions.oauth2 import require_oauth2
 from ..models import (
     db, 
     Product as ProductModel,
@@ -13,6 +13,11 @@ from ..models import (
 
 
 class Product(Resource):
+
+    method_decorators = {
+        "put": [require_oauth2(scopes="ALL")],
+        "delete": [require_oauth2(scopes="ALL")]
+    }
 
     def get(self, productId):
         prod = ProductModel.query.filter_by(id=productId).first()
