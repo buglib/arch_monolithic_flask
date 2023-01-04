@@ -454,6 +454,127 @@ paths:
                   - invalid_request
                   - invalid_client
                   - invalid_grant
+  /settlement:
+    post:
+      tags:
+        - Settlement
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: settlement
+          in: body
+          schema:
+            type: object
+            example:
+              items:
+                - amount: 1
+                  id: 1
+                - amount: 1
+                  id: 6
+              purchase:
+                name: 周志明
+                telephone: '18888888888'
+                delivery: true
+                address:
+                  province: 广东省
+                  city: 广州市
+                  area: 海珠区
+                location: 广东省  广州市 海珠区 唐家湾港湾大道科技一路3号远光软件股份有限公司
+                pay: wechat
+                id: 1
+                username: icyfenix
+                avatar: https://www.gravatar.com/avatar/1563e833e42fb64b41eed34c9b66d723?d=mp
+                email: icyfenix@gmail.com
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: 商品编号
+                    amount:
+                      type: integer
+                      description: 商品库存数量
+              purchase:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 用户编号
+                  name:
+                    type: string
+                  username:
+                    type: string
+                  telephone:
+                    type: string
+                  email:
+                    type: string
+                  avatar:
+                    type: string
+                  location:
+                    type: string
+                  address:
+                    type: object
+                    properties:
+                      province:
+                        type: string
+                      city:
+                        type: string
+                      area:
+                        type: string
+                  dilivery:
+                    type: boolean
+                    description: 是否需要物流配送
+                  pay:
+                    type: string
+                    description: 支付方式
+      responses:
+        "200":
+          description: 成功创建订单
+          schema:
+            example:
+              id: 2
+              createTime: 2023-01-01T09:25:30.843+0000
+              payId: c862e362-98bb-4ef6-b49c-d3ce896db4fa
+              totalPrice: 220
+              expires: 120000
+              paymentLink: /pay/modify/c862e362-98bb-4ef6-b49c-d3ce896db4fa?state=PAYED&accountId=1
+              payState: WAITING
+            type: object
+            properties:
+              id:
+                type: integer
+                description: 订单编号
+              createTime:
+                type: string
+                format: date-time
+              payId:
+                type: integer
+                description: 支付流水号
+              totalPrice:
+                type: number
+              expires:
+                type: integer
+              paymentLink:
+                type: string
+              payState:
+                type: string
+        "400":
+          description: 创建订单失败
+          schema:
+            type: object
+            example:
+              code: 1
+              message: 商品库存不足
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
 definitions:
   advertisementsModel:
     type: array
