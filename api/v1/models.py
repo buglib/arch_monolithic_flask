@@ -1,4 +1,5 @@
 # coding: utf-8
+from enum import Enum, unique
 import time
 
 from authlib.integrations.sqla_oauth2 import (
@@ -41,6 +42,14 @@ class Advertisement(db.Model):
     product = db.relationship('Product', primaryjoin='Advertisement.product_id == Product.id', backref='advertisements')
 
 
+@unique
+class PaymentState(Enum):
+
+    WAITING = 0  # 等待支付中
+    CANCEL = 1   # 已取消
+    PAYED = 2    # 已支付
+    TIMEOUT = 3  # 已超时回滚（未支付，并且商品库存解冻）
+
 
 class Payment(db.Model):
     __tablename__ = 'payment'
@@ -52,6 +61,20 @@ class Payment(db.Model):
     expires = db.Column(db.Integer, nullable=False)
     payment_link = db.Column(db.String(300))
     pay_state = db.Column(db.String(20))
+
+    user_id = db.Column(
+        db.ForeignKey('account.id', ondelete='CASCADE'), 
+        index=True
+    )
+
+    user = db.relationship(
+        "Account",
+        primaryjoin="Payment.user_id == Account.id",
+        backref="payments"
+    )
+
+    def get_payment_state(self):
+        return PaymentState[self.pay_state]
 
 
 
@@ -66,6 +89,13 @@ class Product(db.Model):
     cover = db.Column(db.String(100))
     detail = db.Column(db.String(100))
 
+    stockpile = db.relationship(
+        'Stockpile', 
+        primaryjoin='Product.id == Stockpile.product_id', 
+        back_populates='product',
+        uselist=False
+    )
+
 
 
 class Specification(db.Model):
@@ -76,7 +106,11 @@ class Specification(db.Model):
     value = db.Column(db.String(100))
     product_id = db.Column(db.ForeignKey('product.id', ondelete='CASCADE'), index=True)
 
-    product = db.relationship('Product', primaryjoin='Specification.product_id == Product.id', backref='specifications')
+    product = db.relationship(
+        'Product', 
+        primaryjoin='Specification.product_id == Product.id', 
+        backref='specifications'
+    )
 
 
 
@@ -88,7 +122,25 @@ class Stockpile(db.Model):
     frozen = db.Column(db.Integer)
     product_id = db.Column(db.ForeignKey('product.id', ondelete='CASCADE'), index=True)
 
-    product = db.relationship('Product', primaryjoin='Stockpile.product_id == Product.id', backref='stockpiles')
+    product = db.relationship(
+        'Product', 
+        primaryjoin='Stockpile.product_id == Product.id', 
+        back_populates='stockpile',
+        uselist=False
+    )
+
+    def increase(self, amount):
+        self.amount += amount
+
+    def decrease(self, amount):
+        self.frozen -= amount
+
+    def freeze(self, amount):
+        self.amount -= amount
+        self.frozen += amount
+
+    def thaw(self, amount):
+        self.freeze(-1 * amount)
 
 
 

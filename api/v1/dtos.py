@@ -4,7 +4,9 @@ from dataclasses import (
     field
 )
 from enum import Enum, unique
-from typing import Any, List
+from typing import Any, Dict, List
+
+from .models import Product
 
 
 @dataclass
@@ -141,6 +143,8 @@ class SettlementDTO:
     """
     items: List[ItemDTO] = field(init=False)
     purchase: PurchaseDTO = field(init=False)
+    products: Dict[str, Product] = field(init=False)
+    total_price: float = field(init=False)
 
     def from_dict(self, data: dict):
         if not isinstance(data, dict):
@@ -148,8 +152,9 @@ class SettlementDTO:
             raise TypeError(err_msg)
 
         keys = self.__dataclass_fields__.keys()
+        keys_not_required = ["products", "total_price"]
         for k in keys:
-            if k not in data:
+            if k not in keys_not_required and k not in data:
                 err_msg = "argument 'data' must be a instance of dict with key '%s'" % k
                 raise KeyError(err_msg)
 

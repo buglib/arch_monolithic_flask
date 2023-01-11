@@ -25,7 +25,7 @@ class ProductsStockpile(Resource):
             )
             status_code = 404
         else:
-            stockpile = product.stockpiles[0]
+            stockpile = product.stockpile
             resp_body = dict(
                 id=stockpile.id,
                 product_id=stockpile.product_id,

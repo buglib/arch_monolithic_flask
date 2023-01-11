@@ -50,8 +50,10 @@ class TestStockpileResource:
             amount=10,
             frozen=10
         )
-        product.stockpiles.append(stockpile)
-        db.session.add(product)
+        # product.stockpiles.append(stockpile)
+        # product.stockpile = stockpile
+        # db.session.add(product)
+        db.session.add(stockpile)
         db.session.commit()
 
         resp = client.get(
@@ -95,8 +97,10 @@ class TestStockpileResource:
             amount=10,
             frozen=10
         )
-        product.stockpiles.append(stockpile)
+        # product.stockpiles.append(stockpile)
+        product.stockpile = stockpile
         db.session.add(product)
+        db.session.add(product.stockpile)
         db.session.commit()
 
         json_data = dict(
